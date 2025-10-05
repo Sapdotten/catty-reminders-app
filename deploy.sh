@@ -7,7 +7,7 @@ sudo mkdir -p /home/user/catty-reminders-app
 
 # Копируем файлы
 echo "📁 Копируем файлы сайта..."
-sudo cp . /home/user/catty-reminders-app
+sudo cp -r ./* /home/user/catty-reminders-app/
 source /home/user/catty-reminders-app/venv/bin/activate
 pip install -r /home/user/catty-reminders-app/requirements.txt
 
