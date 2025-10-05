@@ -2,8 +2,7 @@
 
 echo "🧪 Running tests..."
 
-python3 -m venv venv
-source ./venv/bin/activate
+source /home/user/catty-reminders-app/venv/bin/activate
 pip install -r ./requirements.txt
 pip install playwright
 playwright install
