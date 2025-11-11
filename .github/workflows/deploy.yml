@@ -23,12 +23,10 @@ jobs:
 
       - name: Deploy to server
         run: |
-          ssh -p 2433 ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+          rsync -avz -e "ssh -p 2433" . ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/home/user/catty-reminders-app/
+          ssh -p 2433 -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
             echo "🚀 Начинаем развертывание демо-сайта..."
-            mkdir -p /home/user/catty-reminders-app
-            echo "📁 Копируем файлы сайта..."
-            cp -r ./* /home/user/catty-reminders-app/
             source /home/user/catty-reminders-app/venv/bin/activate
             pip install -r /home/user/catty-reminders-app/requirements.txt
-            systemctl restart catty-reminders-app.service
+            sudo systemctl restart catty-reminders-app.service
           EOF
