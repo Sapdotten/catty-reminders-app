@@ -31,4 +31,4 @@ jobs:
             source /home/user/catty-reminders-app/venv/bin/activate
             pip install -r /home/user/catty-reminders-app/requirements.txt
             systemctl restart catty-reminders-app.service
-            EOF
+          EOF
