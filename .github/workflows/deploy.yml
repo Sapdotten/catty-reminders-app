@@ -18,6 +18,7 @@ jobs:
 
       - name: Deploy to server
         run: |
+          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
           rsync -avz --delete . ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/home/user/catty-reminders-app/
           ssh -p 2433 -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
             echo "🚀 Начинаем развертывание демо-сайта..."
