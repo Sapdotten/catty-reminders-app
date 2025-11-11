@@ -16,11 +16,14 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
+      - name: Add server to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p 2433 ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+
       - name: Deploy to server
         run: |
-          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
-          rsync -avz --delete . ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/home/user/catty-reminders-app/
-          ssh -p 2433 -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+          ssh -p 2433 ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
             echo "🚀 Начинаем развертывание демо-сайта..."
             mkdir -p /home/user/catty-reminders-app
             echo "📁 Копируем файлы сайта..."
