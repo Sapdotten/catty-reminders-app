@@ -23,6 +23,12 @@ jobs:
         run: |
           playwright install
 
+      - name: Start server
+        run: |
+          python app.py &
+        env:
+          PORT: 8181
+
       - name: Run tests
         run: |
           python -m pytest
