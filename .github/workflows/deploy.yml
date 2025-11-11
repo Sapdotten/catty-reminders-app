@@ -28,5 +28,5 @@ jobs:
             echo "🚀 Начинаем развертывание демо-сайта..."
             source /home/user/catty-reminders-app/venv/bin/activate
             pip install -r /home/user/catty-reminders-app/requirements.txt
-            sudo systemctl restart catty-reminders-app.service
+            systemctl restart catty-reminders.service
           EOF
