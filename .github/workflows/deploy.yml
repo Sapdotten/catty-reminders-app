@@ -22,10 +22,10 @@ jobs:
           rsync -avz --delete . ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/home/user/catty-reminders-app/
           ssh -p 2433 -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
             echo "🚀 Начинаем развертывание демо-сайта..."
-            sudo mkdir -p /home/user/catty-reminders-app
+            mkdir -p /home/user/catty-reminders-app
             echo "📁 Копируем файлы сайта..."
-            sudo cp -r ./* /home/user/catty-reminders-app/
+            cp -r ./* /home/user/catty-reminders-app/
             source /home/user/catty-reminders-app/venv/bin/activate
             pip install -r /home/user/catty-reminders-app/requirements.txt
-            sudo systemctl restart catty-reminders-app.service
+            systemctl restart catty-reminders-app.service
             EOF
