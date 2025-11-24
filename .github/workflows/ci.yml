@@ -16,5 +16,11 @@ jobs:
       - name: Build image
         run: docker build -t catty-reminders-app .
 
+      - name: Run server
+        run: |
+          docker run -d --name app -p 8181:8181 catty-reminders-app
+          sleep 5  # дать серверу время на запуск
+
       - name: Run tests
-        run: docker run --rm catty-reminders-app python -m pytest
+        run: |
+          docker run --rm --network host catty-reminders-app python -m pytest
