@@ -11,6 +11,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: catty-image
+          path: .
+
       - name: Set up SSH agent
         uses: webfactory/ssh-agent@v0.7.0
         with:
@@ -21,12 +27,13 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -p 2433 ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
-      - name: Deploy to server
+      - name: Transfer image and deploy
         run: |
-          rsync -avz -e "ssh -p 2433" . ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/home/user/catty-reminders-app/
+          scp -P 2433 catty-reminders.tar ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/home/user/
           ssh -p 2433 -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-            echo "🚀 Начинаем развертывание демо-сайта..."
-            source /home/user/catty-reminders-app/venv/bin/activate
-            pip install -r /home/user/catty-reminders-app/requirements.txt
-            systemctl restart catty-reminders.service
+            docker stop catty-reminders || true
+            docker rm catty-reminders || true
+            docker load < /home/user/catty-reminders.tar
+            docker run -d --name catty-reminders -p 80:8181 catty-reminders-app
+            rm /home/user/catty-reminders.tar
           EOF
