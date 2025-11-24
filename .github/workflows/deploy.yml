@@ -8,12 +8,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Download artifact from same SHA
-        uses: actions/download-artifact@v4
-        with:
-          name: catty-image
-          path: .
-
       - name: Set up SSH agent
         uses: webfactory/ssh-agent@v0.7.0
         with:
@@ -24,12 +18,16 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -p 2433 ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
-      - name: Deploy
+      - name: Deploy from GHCR
         run: |
           ssh -p 2433 ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+            echo "Logging into GHCR"
             docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
-            docker pull ghcr.io/your-username/catty-reminders-app:latest
+            echo "Pulling latest image"
+            docker pull ghcr.io/sapdotten/catty-reminders-app:latest
+            echo "Stopping and removing old container"
             docker stop catty-reminders || true
             docker rm catty-reminders || true
-            docker run -d --name catty-reminders -p 80:8181 ghcr.io/your-username/catty-reminders-app:latest
+            echo "Starting new container"
+            docker run -d --name catty-reminders -p 80:8181 ghcr.io/sapdotten/catty-reminders-app:latest
           EOF
