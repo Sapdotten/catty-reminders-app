@@ -1,10 +1,8 @@
 name: Deploy
 
 on:
-  workflow_run:
-    workflows: ["CI"]
-    types: [completed]
-    tags: ["*"]
+  push:
+    tags: ['*']
 
 jobs:
   deploy:
@@ -26,13 +24,12 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -p 2433 ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
-      - name: Transfer and deploy
+      - name: Deploy
         run: |
-          scp -P 2433 catty-reminders.tar ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/home/user/
           ssh -p 2433 ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+            docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+            docker pull ghcr.io/your-username/catty-reminders-app:latest
             docker stop catty-reminders || true
             docker rm catty-reminders || true
-            docker load < /home/user/catty-reminders.tar
-            docker run -d --name catty-reminders -p 80:8181 catty-reminders-app
-            rm /home/user/catty-reminders.tar
+            docker run -d --name catty-reminders -p 80:8181 ghcr.io/your-username/catty-reminders-app:latest
           EOF
