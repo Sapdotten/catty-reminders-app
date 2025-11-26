@@ -29,5 +29,5 @@ jobs:
             sudo docker stop catty-reminders || true
             sudo docker rm catty-reminders || true
             echo "Starting new container"
-            sudo docker run -d --name catty-reminders -p 81:8181 ghcr.io/sapdotten/catty-reminders-app:latest
+            sudo docker run -d --name catty-reminders -p 8181:8181 ghcr.io/sapdotten/catty-reminders-app:latest
           EOF
