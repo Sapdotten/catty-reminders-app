@@ -20,7 +20,7 @@ jobs:
 
       - name: Deploy from GHCR
         run: |
-          ssh -p 2433 ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+          ssh -t -p 2433 ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
             echo "Logging into GHCR"
             sudo docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
             echo "Pulling latest image"
