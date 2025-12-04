@@ -1,0 +1,33 @@
+name: Deploy
+
+on:
+  push:
+    tags: ['*']
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up SSH agent
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p 2433 ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+
+      - name: Deploy from GHCR
+        run: |
+          ssh -t -p 2433 ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+            echo "Logging into GHCR"
+            sudo docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+            echo "Pulling latest image"
+            sudo docker pull ghcr.io/sapdotten/catty-reminders-app:latest
+            echo "Stopping and removing old container"
+            sudo docker stop catty-reminders || true
+            sudo docker rm catty-reminders || true
+            echo "Starting new container"
+            sudo docker run -d --name catty-reminders -p 8181:8181 ghcr.io/sapdotten/catty-reminders-app:latest
+          EOF
