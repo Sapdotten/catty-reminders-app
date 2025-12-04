@@ -22,7 +22,8 @@ jobs:
         run: |
           scp -P 2433 docker-compose.yml ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/home/user/
           ssh -t -p 2433 ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-            sudo docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+            echo "${{ secrets.GITHUB_TOKEN }}" | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            cd /home/user
             docker-compose -f docker-compose.yml -p catty-reminders down || true
             docker-compose -f docker-compose.yml -p catty-reminders pull
             docker-compose -f docker-compose.yml -p catty-reminders up -d
