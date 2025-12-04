@@ -22,10 +22,8 @@ jobs:
         run: |
           scp -P 2433 docker-compose.yml ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/home/user/
           ssh -t -p 2433 ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-            echo "Logging into GHCR"
             sudo docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
-            echo "Stopping and removing old compose"
-            docker-compose -p catty-reminders down
-            echo "Starting new container"
-            docker-compose -f ./docker-compose.yml -p catty-reminders up -d
+            docker-compose -f docker-compose.yml -p catty-reminders down || true
+            docker-compose -f docker-compose.yml -p catty-reminders pull
+            docker-compose -f docker-compose.yml -p catty-reminders up -d
           EOF
