@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   push:
-    tags: ['*']
+    tags: ["*"]
 
 jobs:
   deploy:
@@ -17,7 +17,7 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -p 2433 ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
-
+      - uses: actions/checkout@v4
       - name: Deploy from GHCR
         run: |
           scp -P 2433 docker-compose.yml ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/home/user/
