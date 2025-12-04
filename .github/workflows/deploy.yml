@@ -23,11 +23,8 @@ jobs:
           ssh -t -p 2433 ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
             echo "Logging into GHCR"
             sudo docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
-            echo "Pulling latest image"
-            sudo docker pull ghcr.io/sapdotten/catty-reminders-app:latest
-            echo "Stopping and removing old container"
-            sudo docker stop catty-reminders || true
-            sudo docker rm catty-reminders || true
+            echo "Stopping and removing old compose"
+            docker-compose catty-reminders down
             echo "Starting new container"
-            sudo docker run -d --name catty-reminders -p 8181:8181 ghcr.io/sapdotten/catty-reminders-app:latest
+            docker-compose -f ./docker-compose.yml -p catty-reminders up -d
           EOF
